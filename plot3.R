@@ -16,14 +16,16 @@ drawPlot <- function(){
     meter3 <- as.numeric(data$Sub_metering_3)
     
     png(file = "plot3.png")
-    plot(meter1, type = "l", xaxt='n', col='black',
+    dt <- createDateTimeVector(data)
+    plot(dt, meter1, type = "l", xaxt='n', col='black',
          ylab = "Energy sub metering",
          xlab = "")
     
-    points(meter2, type = 'l', col='red')
-    points(meter3, type = 'l', col='blue')
+    points(dt, meter2, type = 'l', col='red')
+    points(dt, meter3, type = 'l', col='blue')
     
-    axis(1,  at=c(0, 1500, 2900),
+    at_vec <- rangeVector(dt)
+    axis(1,  at=at_vec,
          labels=c('Thu','Fri','Sat'))
     
     legend("topright", col=c('black', 'red', 'blue'), lty = 1, 
@@ -31,4 +33,15 @@ drawPlot <- function(){
     
     
     dev.off()
+}
+
+createDateTimeVector <- function(data){
+    date <- as.Date(data$Date, format = "%d/%m/%Y")
+    time <- as.character(data$Time)
+    date_time <- as.numeric(as.POSIXct(paste(date, time), 
+                                       format = "%Y-%m-%d %H:%M:%S"))
+}
+
+rangeVector <- function(data){
+    data <- c(min(data), median(data), max(data))
 }

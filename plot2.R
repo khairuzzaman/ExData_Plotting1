@@ -9,22 +9,31 @@ readData <- function(){
                             data$Date == "1/2/2007" | data$Date == "2/2/2007")
 }
 
-plot2 <- function(){
+drawPlot <- function(){
     data <- readData()
     num_data <- as.numeric(data$Global_active_power)
-    day <- as.numeric(strftime(as.Date(data$Date, "%d/%m/%Y"), "%u"))
-    day_name <- format(as.Date(data$Date), "%a")
     png(file = "plot2.png")
-    plot(num_data, type = "l", xaxt='n',
+    
+    dt <- createDateTimeVector(data)
+    plot(dt, num_data, type = "l", xaxt='n',
          ylab = "Global Active Power (kilowatts)",
          xlab = "")
     
-    #axis(1, at = day, 
-     #    labels=day_name)
-    
-    axis(1,  at=c(0, 1500, 2900),
+    at_vec <- rangeVector(dt)
+    axis(1,  at=at_vec,
          labels=c('Thu','Fri','Sat'))
     
     
     dev.off()
+}
+
+createDateTimeVector <- function(data){
+    date <- as.Date(data$Date, format = "%d/%m/%Y")
+    time <- as.character(data$Time)
+    date_time <- as.numeric(as.POSIXct(paste(date, time), 
+                            format = "%Y-%m-%d %H:%M:%S"))
+}
+
+rangeVector <- function(data){
+    data <- c(min(data), median(data), max(data))
 }
